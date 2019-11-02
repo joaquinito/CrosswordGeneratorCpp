@@ -14,6 +14,7 @@ uint8_t CheckNumOfArgs(int argNum)
     {
         std::cout << "Error! Not enough arguments.\n";
         status = STATUS_NOK;
+        garbage
     }
 
     return status;
