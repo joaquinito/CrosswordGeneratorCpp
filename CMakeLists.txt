@@ -1,6 +1,3 @@
-# This CMakeLists file needs fixing - it will not work on first try
-# if all Unit Test related commands are commented out, because the 
-# GoogleTest project must be built.
 
 cmake_minimum_required(VERSION 3.10)
 
@@ -17,21 +14,8 @@ set(Sources
     ../src/InputCheck.cpp
 )
 
-# Import GoogleTest from its Github repo
-# Taken from: https://crascit.com/2015/07/25/cmake-gtest/
-include(ExternalProject)
-ExternalProject_Add(
-    googletest
-    GIT_REPOSITORY https://github.com/google/googletest
-    PREFIX ${CMAKE_CURRENT_BINARY_DIR}/googletest
-    CONFIGURE_COMMAND ""
-    BUILD_COMMAND ""
-    INSTALL_COMMAND ""
-    TEST_COMMAND ""
-)
-
 # Include the CMakeLists from GoogleTest
-add_subdirectory(build/googletest/src/googletest)
+add_subdirectory(build/googletest/googletest)
 
 # Create static library CrosswordsGenLib to be used by the unit tests
 add_library(CrosswordsGenLib STATIC ${Sources} ${Headers})
