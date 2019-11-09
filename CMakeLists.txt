@@ -7,11 +7,15 @@ project(CrosswordsGenerator)
 # Define macro "Headers" to reference all .hpp files 
 set(Headers
     ../src/InputCheck.hpp
-)
+    ../src/Crosswords.hpp
+    ../src/Square.hpp
+)       
 
 # Define macro "Sources" to reference all .cpp files 
 set(Sources
     ../src/InputCheck.cpp
+    ../src/Crosswords.cpp
+    ../src/Square.cpp
 )
 
 # Include the CMakeLists from GoogleTest

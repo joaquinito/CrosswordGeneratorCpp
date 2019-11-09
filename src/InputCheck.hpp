@@ -7,4 +7,6 @@ uint8_t IsNumOfArgsValid(int argNum);
 
 uint8_t IsCfgFileValid(char* input);
 
+uint8_t IsWordsFileValid(char* input);
+
 uint8_t IsFlagR(char* input);

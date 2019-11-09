@@ -1,17 +1,19 @@
 /* 
  * AED Project 2011 in C++
  * 
- * How to use:
- * $ geracruzadas <triz.cfg> <palavras.txt>
+ *
  */
 
 #include <iostream>
 #include <cstdint>
 #include <cstring>
 #include "InputCheck.hpp"
+#include "Crosswords.hpp"
 
 int main(int argc, char *argv[])
 {
+    Crosswords * myCrosswordsBoard;
+
     std::string cfgFileDir = "table_cfg/";
     std::string wordsFileDir = "words/";
     std::string outFileDir = "out/";
@@ -46,6 +48,11 @@ int main(int argc, char *argv[])
 
     if(status == STATUS_OK)
     {
+        status = IsWordsFileValid(argv[2]);
+    }
+
+    if(status == STATUS_OK)
+    {
         wordsFileDir += argv[2];
 
         wordsFile = fopen(wordsFileDir.c_str(), "r");
@@ -69,6 +76,12 @@ int main(int argc, char *argv[])
         }
     }
     
+    myCrosswordsBoard = new Crosswords(cfgFile);
+    
+    myCrosswordsBoard->PrintBoard(letters);
+
+    delete myCrosswordsBoard;
+
     if(cfgFile != NULL)
     {
         fclose(cfgFile);
