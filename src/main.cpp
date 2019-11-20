@@ -7,12 +7,12 @@
 #include <iostream>
 #include <cstdint>
 #include <cstring>
+#include <memory>
 #include "InputCheck.hpp"
 #include "Crosswords.hpp"
 
 int main(int argc, char *argv[])
 {
-    Crosswords * myCrosswordsBoard;
 
     std::string cfgFileDir = "table_cfg/";
     std::string wordsFileDir = "words/";
@@ -76,11 +76,24 @@ int main(int argc, char *argv[])
         }
     }
     
-    myCrosswordsBoard = new Crosswords(cfgFile);
-    
-    myCrosswordsBoard->PrintBoard(letters);
-
-    delete myCrosswordsBoard;
+    if(status == STATUS_OK)
+    {
+        std::unique_ptr<Crosswords> myCrosswordsBoard(new Crosswords(cfgFile));
+        
+        //myCrosswordsBoard->PrintBoard(colors);
+        myCrosswordsBoard->PrintBoard(letters);
+        //myCrosswordsBoard->PrintBoard(hWordIds);
+        //myCrosswordsBoard->PrintBoard(hWordStart);
+        //myCrosswordsBoard->PrintBoard(hWordFixed);
+        myCrosswordsBoard->PrintBoard(hWordSize);
+        myCrosswordsBoard->PrintBoard(hWordLetterPos);
+        //myCrosswordsBoard->PrintBoard(vWordIds);
+        //myCrosswordsBoard->PrintBoard(vWordStart);
+        //myCrosswordsBoard->PrintBoard(vWordIds);
+        myCrosswordsBoard->PrintBoard(vWordSize);
+        myCrosswordsBoard->PrintBoard(vWordLetterPos);
+       
+    }
 
     if(cfgFile != NULL)
     {

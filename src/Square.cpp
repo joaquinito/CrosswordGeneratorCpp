@@ -10,10 +10,14 @@ Square::Square()
     letter = '?';
     hWordId = 0;
     hWordStart = FALSE; 
-    hWordFixed = FALSE; 
+    hWordFixed = FALSE;
+    hWordSize = 0;        
+    hWordLetterPos = 0;
     vWordId = 0;
     vWordStart = FALSE; 
     vWordFixed = FALSE;
+    vWordSize = 0;       
+    vWordLetterPos = 0;
 }
 
 short Square::GetSquareColor()
@@ -71,6 +75,28 @@ void Square::SetHWordFixed()
     return;
 }
 
+short Square::GetHWordSize()
+{
+    return hWordSize;
+}
+
+void Square::SetHWordSize(short newSize)
+{
+    hWordSize = newSize;
+    return;
+}
+
+short Square::GetHWordLetterPos()
+{
+    return hWordLetterPos;
+}
+
+void Square::SetHWordLetterPos(short newLetterPos)
+{
+    hWordLetterPos = newLetterPos;
+    return;
+}
+
 short Square::GetVWordId()
 {
     return vWordId;
@@ -101,5 +127,27 @@ short Square::IsVWordFixed()
 void Square::SetVWordFixed()
 {
     vWordFixed = TRUE;
+    return;
+}
+
+short Square::GetVWordSize()
+{
+    return vWordSize;
+}
+
+void Square::SetVWordSize(short newSize)
+{
+    vWordSize = newSize;
+    return;
+}
+
+short Square::GetVWordLetterPos()
+{
+    return vWordLetterPos;
+}
+
+void Square::SetVWordLetterPos(short newLetterPos)
+{
+    vWordLetterPos = newLetterPos;
     return;
 }
