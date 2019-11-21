@@ -85,13 +85,13 @@ int main(int argc, char *argv[])
         //myCrosswordsBoard->PrintBoard(hWordIds);
         //myCrosswordsBoard->PrintBoard(hWordStart);
         //myCrosswordsBoard->PrintBoard(hWordFixed);
-        myCrosswordsBoard->PrintBoard(hWordSize);
-        myCrosswordsBoard->PrintBoard(hWordLetterPos);
+        //myCrosswordsBoard->PrintBoard(hWordSize);
+        //myCrosswordsBoard->PrintBoard(hWordLetterPos);
         //myCrosswordsBoard->PrintBoard(vWordIds);
         //myCrosswordsBoard->PrintBoard(vWordStart);
         //myCrosswordsBoard->PrintBoard(vWordIds);
-        myCrosswordsBoard->PrintBoard(vWordSize);
-        myCrosswordsBoard->PrintBoard(vWordLetterPos);
+        //myCrosswordsBoard->PrintBoard(vWordSize);
+        //myCrosswordsBoard->PrintBoard(vWordLetterPos);
        
     }
 

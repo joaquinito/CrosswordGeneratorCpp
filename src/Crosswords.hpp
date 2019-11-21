@@ -27,7 +27,7 @@ class Crosswords
 
         std::vector<std::vector<Square>> Board; // Board object (2-dimension vector of Squares)
 
-        std::vector<uint8_t> wordSizes;
+        std::vector<int> wordSizes;
 
     public:
  
@@ -39,11 +39,11 @@ class Crosswords
 
         void PreFillBoard(FILE * cfgFile);
 
-        void PrintBoard(PrintableBoardSymbols symbol);
-
         void IdentifyHorizontalWords();
 
         void IdentifyVerticalWords();
 
         void GetWordSizes();
+
+        void PrintBoard(PrintableBoardSymbols symbol);
 };

@@ -3,6 +3,7 @@
 #include <iostream>
 #include <cstring>
 #include <iomanip>
+#include <algorithm>
 
 Crosswords::Crosswords(FILE * cfgFile)
 {
@@ -216,10 +217,7 @@ void Crosswords::IdentifyVerticalWords()
                             sizeCounter = 0;
                             posCounter = 0;
                         }
-
                     }
-
-                    
                 }
             }
         }
@@ -234,27 +232,40 @@ void Crosswords::GetWordSizes()
     uint8_t counter = 0;
 
     // Get the horizontal word sizes
-    for(int j=0; j<numCol; j++)
+    for(int i=0; i<numLin; i++)
     {
-        for(int i=0; i<numLin; i++)
+        for(int j=0; j<numCol; j++)
         {
-            if(Board[i][j].GetSquareColor() == WHITE_SQUARE && Board[i][j].IsHWordFixed() == FALSE)
+            if(Board[i][j].GetSquareColor() == WHITE_SQUARE)
             {
-                counter++;
-            }
+                if( Board[i][j].IsHWordFixed() == FALSE &&
+                    Board[i][j].GetHWordSize() != 0 &&
+                    std::find(wordSizes.begin(), wordSizes.end(), Board[i][j].GetHWordSize()) == wordSizes.end())
+                {
+                    wordSizes.push_back(Board[i][j].GetHWordSize());
+                }
 
-            if(i+1 == numCol)  
-            {
-                wordSizes.push_back(counter);
-            }
-            else if(Board[i+1][j].GetSquareColor() == BLACK_SQUARE)
-            {
-                wordSizes.push_back(counter);
+                if( Board[i][j].IsVWordFixed() == FALSE &&
+                    Board[i][j].GetVWordSize() != 0 &&
+                    std::find(wordSizes.begin(), wordSizes.end(), Board[i][j].GetVWordSize()) == wordSizes.end())
+                {
+                    wordSizes.push_back(Board[i][j].GetVWordSize());
+                }        
             }
         }
-
     }
 
+    std::sort(wordSizes.begin(), wordSizes.end());
+
+    std::cout << "The word sizes are: ";
+
+    for (int i = 0; i < wordSizes.size(); i++)
+    {
+        std::cout << wordSizes.at(i) << " ";
+    }
+
+    std::cout << std::endl;
+    
     return;
 }
 
@@ -389,7 +400,7 @@ void Crosswords::PrintBoard(PrintableBoardSymbols symbol)
                     {
                         std::cout << std::setfill(' ') << std::setw(2) << Board[i][j].GetVWordLetterPos() << " ";
                     }
-                    
+
                     break;
 
                 default:
