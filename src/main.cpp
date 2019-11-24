@@ -10,10 +10,10 @@
 #include <memory>
 #include "InputCheck.hpp"
 #include "Crosswords.hpp"
+#include "Solver.hpp"
 
 int main(int argc, char *argv[])
 {
-
     std::string cfgFileDir = "table_cfg/";
     std::string wordsFileDir = "words/";
     std::string outFileDir = "out/";
@@ -92,7 +92,15 @@ int main(int argc, char *argv[])
         //myCrosswordsBoard->PrintBoard(vWordIds);
         //myCrosswordsBoard->PrintBoard(vWordSize);
         //myCrosswordsBoard->PrintBoard(vWordLetterPos);
-       
+
+        std::unique_ptr<Solver> theSolution(new Solver(wordsFile, *myCrosswordsBoard));
+
+        if(!theSolution->FindSolution(*myCrosswordsBoard))
+        {
+            std::cout << "No solution was found." << std::endl;
+        };
+        
+        myCrosswordsBoard->PrintBoard(letters);
     }
 
     if(cfgFile != NULL)

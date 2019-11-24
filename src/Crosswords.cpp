@@ -12,7 +12,6 @@ Crosswords::Crosswords(FILE * cfgFile)
     PreFillBoard(cfgFile);
     IdentifyHorizontalWords();
     IdentifyVerticalWords();
-    GetWordSizes();
 
     return;
 }
@@ -25,6 +24,31 @@ void Crosswords::SetBoardDimensions(FILE * cfgFile)
     return;
 }
 
+int Crosswords::GetNumberOfLines()
+{
+    return numLin;
+}
+
+int Crosswords::GetNumberofColumns()
+{
+    return numCol;
+}
+
+int Crosswords::GetMaxDimenson()
+{
+    int maxDim = 0;
+
+    if(numLin >= numCol)
+    {
+        maxDim = numLin;
+    }
+    else
+    {
+        maxDim = numCol;
+    }
+
+    return maxDim;
+}
 
 std::vector<std::vector<Square>> Crosswords::CreateBoard()
 {
@@ -150,7 +174,9 @@ void Crosswords::IdentifyHorizontalWords()
         }
     }
     
+    numHWords = wordId;
     std::cout << "We have " << wordId-1 << " horizontal words.\n";
+    
     return;
 }
 
@@ -223,50 +249,15 @@ void Crosswords::IdentifyVerticalWords()
         }
     }
 
+    numVHords = wordId;
     std::cout << "We have " << wordId-1 << " vertical words.\n";
+
     return;
 }
 
-void Crosswords::GetWordSizes()
+Square Crosswords::GetSquareInfo(int lin, int col)
 {
-    uint8_t counter = 0;
-
-    // Get the horizontal word sizes
-    for(int i=0; i<numLin; i++)
-    {
-        for(int j=0; j<numCol; j++)
-        {
-            if(Board[i][j].GetSquareColor() == WHITE_SQUARE)
-            {
-                if( Board[i][j].IsHWordFixed() == FALSE &&
-                    Board[i][j].GetHWordSize() != 0 &&
-                    std::find(wordSizes.begin(), wordSizes.end(), Board[i][j].GetHWordSize()) == wordSizes.end())
-                {
-                    wordSizes.push_back(Board[i][j].GetHWordSize());
-                }
-
-                if( Board[i][j].IsVWordFixed() == FALSE &&
-                    Board[i][j].GetVWordSize() != 0 &&
-                    std::find(wordSizes.begin(), wordSizes.end(), Board[i][j].GetVWordSize()) == wordSizes.end())
-                {
-                    wordSizes.push_back(Board[i][j].GetVWordSize());
-                }        
-            }
-        }
-    }
-
-    std::sort(wordSizes.begin(), wordSizes.end());
-
-    std::cout << "The word sizes are: ";
-
-    for (int i = 0; i < wordSizes.size(); i++)
-    {
-        std::cout << wordSizes.at(i) << " ";
-    }
-
-    std::cout << std::endl;
-    
-    return;
+    return Board[lin][col];
 }
 
 

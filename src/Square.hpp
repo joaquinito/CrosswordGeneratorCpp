@@ -1,3 +1,5 @@
+#ifndef SQUARE_HPP
+#define SQUARE_HPP
 
 #define FALSE   0
 #define TRUE    1
@@ -63,3 +65,5 @@ class Square
         void  SetVWordLetterPos(short newLetterPos);
 
 };
+
+#endif

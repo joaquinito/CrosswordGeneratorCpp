@@ -1,3 +1,6 @@
+#ifndef CROSSWORDS_HPP
+#define CROSSWORDS_HPP
+
 #include <iostream>
 #include <vector>
 #include "Square.hpp"
@@ -29,12 +32,6 @@ class Crosswords
 
         std::vector<int> wordSizes;
 
-    public:
- 
-        Crosswords(FILE * cfgFile);
-
-        void SetBoardDimensions(FILE * cfgFile);
-        
         std::vector<std::vector<Square>> CreateBoard();
 
         void PreFillBoard(FILE * cfgFile);
@@ -43,7 +40,24 @@ class Crosswords
 
         void IdentifyVerticalWords();
 
-        void GetWordSizes();
+    public:
+
+        int numHWords;
+        int numVHords;
+ 
+        Crosswords(FILE * cfgFile);
+
+        void SetBoardDimensions(FILE * cfgFile);
+    
+        int GetNumberOfLines();
+
+        int GetNumberofColumns();
+
+        int  GetMaxDimenson();
+        
+        Square GetSquareInfo(int lin, int col);
 
         void PrintBoard(PrintableBoardSymbols symbol);
 };
+
+#endif
