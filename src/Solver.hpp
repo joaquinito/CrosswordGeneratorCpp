@@ -23,6 +23,8 @@ typedef struct BoardWordInfo_t
     uint8_t wordStartLin;
     uint8_t wordStartCol;
     std::vector<std::string> candidates;
+    std::string chosenWord;
+    bool nominated;
 
 } BoardWordInfo;
 
@@ -33,6 +35,12 @@ typedef struct Coordinates_t
 
 } Coordinates;
 
+typedef struct Candidate_t
+{
+    std::vector<std::string> candidateWord;
+    bool isNominated;
+
+} Candidate;
 
 class Solver
 {
@@ -52,6 +60,12 @@ class Solver
         void ValidateVerticalCandidates(Square &boardSquare, std::vector<BoardWordInfo> &BoardHorizontalWords, 
                                           std::vector<BoardWordInfo> &BoardVerticalWords, int &m, int &n);
 
+        void ChooseHorizontalCandidate(Square &boardSquare, std::vector<BoardWordInfo> &BoardHorizontalWords, 
+                                          std::vector<BoardWordInfo> &BoardVerticalWords, int &m, int &n);  
+
+        void ChooseVerticalCandidate(Square &boardSquare, std::vector<BoardWordInfo> &BoardHorizontalWords, 
+                                          std::vector<BoardWordInfo> &BoardVerticalWords, int &m, int &n);
+
     public:
         
         Solver(FILE *wordsFile);
@@ -69,8 +83,6 @@ class Solver
         void PrintBoardSharedSquares();
 
         void PrintCandidateLists();
-
-        
 
 };
 

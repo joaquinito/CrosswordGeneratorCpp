@@ -78,7 +78,7 @@ int main(int argc, char *argv[])
     
     if(status == STATUS_OK)
     {
-        std::unique_ptr<Crosswords> myCrosswordsBoard(new Crosswords(cfgFile));
+        std::unique_ptr<Crosswords> myCrosswordsBoard(new Crosswords(cfgFile, argv[1]));
         
         //myCrosswordsBoard->PrintBoard(colors);
         myCrosswordsBoard->PrintBoard(letters);

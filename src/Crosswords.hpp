@@ -30,6 +30,8 @@ class Crosswords
 
         std::vector<std::vector<Square>> Board; // Board object (2-dimension vector of Squares)
 
+        std::string crosswordsName;
+
         std::vector<int> wordSizes;
 
         std::vector<std::vector<Square>> CreateBoard();
@@ -45,15 +47,17 @@ class Crosswords
         int numHWords;
         int numVHords;
  
-        Crosswords(FILE * cfgFile);
+        Crosswords(FILE * cfgFile, std::string name);
 
         void SetBoardDimensions(FILE * cfgFile);
+
+        std::string GetName();
     
         int GetNumberOfLines();
 
         int GetNumberofColumns();
 
-        int  GetMaxDimenson();
+        int  GetMaxDimension();
         
         Square GetSquareInfo(int lin, int col);
 

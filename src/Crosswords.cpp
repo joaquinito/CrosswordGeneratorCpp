@@ -5,8 +5,9 @@
 #include <iomanip>
 #include <algorithm>
 
-Crosswords::Crosswords(FILE * cfgFile)
+Crosswords::Crosswords(FILE * cfgFile, std::string name)
 {
+    crosswordsName = name.substr(0, name.length()-4);
     SetBoardDimensions(cfgFile);
     Board = CreateBoard();
     PreFillBoard(cfgFile);
@@ -24,6 +25,11 @@ void Crosswords::SetBoardDimensions(FILE * cfgFile)
     return;
 }
 
+std::string Crosswords::GetName()
+{
+    return crosswordsName;
+}
+
 int Crosswords::GetNumberOfLines()
 {
     return numLin;
@@ -34,7 +40,7 @@ int Crosswords::GetNumberofColumns()
     return numCol;
 }
 
-int Crosswords::GetMaxDimenson()
+int Crosswords::GetMaxDimension()
 {
     int maxDim = 0;
 
@@ -77,7 +83,7 @@ void Crosswords::PreFillBoard(FILE * cfgFile)
         else if(buffer[0] == 'H')
         {
             // Fill horizontal word
-            sscanf(buffer, "H%d", &sq_l);
+            fscanf(cfgFile, "%d", &sq_l);
             fscanf(cfgFile, "%d", &sq_c);
             fscanf(cfgFile, "%s", buffer);
 
@@ -91,7 +97,7 @@ void Crosswords::PreFillBoard(FILE * cfgFile)
         else if(buffer[0] == 'V')
         {
             // Fill vertical word
-            sscanf(buffer, "V%d", &sq_c);
+            fscanf(cfgFile, "%d", &sq_c);
             fscanf(cfgFile, "%d", &sq_l);
             fscanf(cfgFile, "%s", buffer);
 
@@ -105,6 +111,7 @@ void Crosswords::PreFillBoard(FILE * cfgFile)
 
     return;
 }
+
 
 void Crosswords::IdentifyHorizontalWords()
 {
@@ -395,6 +402,7 @@ void Crosswords::PrintBoard(PrintableBoardSymbols symbol)
                     break;
 
                 default:
+
                     std::cout << "  ";
                     break;
             }
