@@ -1,5 +1,6 @@
 
 #include "Crosswords.hpp"
+#include "Logger.hpp"
 #include <iostream>
 #include <cstring>
 #include <iomanip>
@@ -181,8 +182,9 @@ void Crosswords::IdentifyHorizontalWords()
         }
     }
     
-    numHWords = wordId;
-    std::cout << "We have " << wordId-1 << " horizontal words.\n";
+    numHWords = wordId-1;
+    
+    Log("We have " + std::to_string(numHWords) + " horizontal words.\n");
     
     return;
 }
@@ -256,8 +258,9 @@ void Crosswords::IdentifyVerticalWords()
         }
     }
 
-    numVHords = wordId;
-    std::cout << "We have " << wordId-1 << " vertical words.\n";
+    numVWords = wordId-1;
+
+    Log("We have " + std::to_string(numVWords) + " vertical words.\n");
 
     return;
 }
@@ -270,6 +273,65 @@ Square Crosswords::GetSquareInfo(int lin, int col)
 
 void Crosswords::PrintBoard(PrintableBoardSymbols symbol)
 {
+    std::string buffer;
+
+    switch(symbol)
+    {
+        case colors:
+            buffer = "TABLE: SQUARE COLORS\n";                 
+            break;
+
+        case letters:
+            buffer = "TABLE: LETTERS\n";  
+            break;
+        
+        case hWordIds:
+            buffer = "TABLE: HORIZONTAL WORD ID\n";
+            break;
+        
+        case hWordStart:
+            buffer = "TABLE: HORIZONTAL WORD START SQUARES\n";
+            break;
+
+        case hWordFixed:
+            buffer = "TABLE: IS HORIZONTAL WORD FIXED?\n";
+            break;
+
+        case hWordSize:
+            buffer = "TABLE: HORIZONTAL WORD SIZE\n";
+            break;
+
+        case hWordLetterPos:
+            buffer = "TABLE: HORIZONTAL WORD LETTER POSITIONS\n";
+            break;
+
+        case vWordIds:
+            buffer = "TABLE: VERTICAL WORD ID\n";
+            break;
+
+        case vWordStart:
+            buffer = "TABLE: VERTICAL WORD START SQUARES\n";
+            break;
+
+        case vWordFixed:
+            buffer = "TABLE: IS VERTICAL WORD FIXED?\n";
+            break;
+
+        case vWordSize:
+            buffer = "TABLE: VERTICAL WORD SIZE\n";
+            break;
+
+        case vWordLetterPos:
+            buffer = "TABLE: VERTICAL WORD LETTER POSITIONS\n";
+            break;
+
+        default:
+            break;
+    }
+
+    Log(buffer);
+    std::cout << buffer;
+    Log("-------------------\n");
     std::cout << "-------------------\n";
 
     for(int i=0; i<numLin; i++)
@@ -280,41 +342,49 @@ void Crosswords::PrintBoard(PrintableBoardSymbols symbol)
             {
                 case colors:
                     
-                    std::cout << Board[i][j].GetSquareColor() << " ";
+                    buffer = std::to_string(Board[i][j].GetSquareColor());
+                    buffer.append(" ");
                     break;
 
                 case letters:
                     
-                    std::cout << Board[i][j].GetLetter() << " ";
+                    buffer = Board[i][j].GetLetter();
+                    buffer.append(" ");
                     break;
                 
                 case hWordIds:
                     
                     if (Board[i][j].GetSquareColor() == BLACK_SQUARE)
                     {
-                        std::cout <<  "-- ";
+                        buffer = "-- ";
                     }
                     else
                     {
-                        std::cout << std::setfill('0') << std::setw(2) << Board[i][j].GetHWordId() << " ";
+                        buffer = std::to_string(Board[i][j].GetHWordId());
+                        buffer.insert(buffer.begin(), 2 - buffer.length(), '0');
+                        buffer.append(" ");                        
                     }
                     
                     break;
                 
                 case hWordStart:
                     
-                    std::cout << Board[i][j].IsHWordStart() << " ";
+                    buffer = std::to_string(Board[i][j].IsHWordStart());
+                    buffer.append(" ");
                     break;
 
                 case hWordFixed:
 
                     if (Board[i][j].GetSquareColor() == BLACK_SQUARE)
                     {
-                        std::cout <<  "-- ";
+                        buffer = "-- ";
                     }
                     else
                     {
-                        std::cout << std::setfill(' ') << std::setw(2) << Board[i][j].IsHWordFixed() << " ";
+                        buffer = std::to_string(Board[i][j].IsHWordFixed());
+                        buffer.insert(buffer.begin(), 2 - buffer.length(), ' ');
+                        buffer.append(" "); 
+                       // std::cout << std::setfill(' ') << std::setw(2) << Board[i][j].IsHWordFixed() << " ";
                     }
 
                     break;
@@ -323,11 +393,14 @@ void Crosswords::PrintBoard(PrintableBoardSymbols symbol)
 
                     if (Board[i][j].GetSquareColor() == BLACK_SQUARE)
                     {
-                        std::cout <<  "-- ";
+                        buffer = "-- ";
                     }
                     else
                     {
-                        std::cout << std::setfill(' ') << std::setw(2) <<  Board[i][j].GetHWordSize() << " ";
+                        buffer = std::to_string(Board[i][j].GetHWordSize());
+                        buffer.insert(buffer.begin(), 2 - buffer.length(), ' ');
+                        buffer.append(" "); 
+                        //std::cout << std::setfill(' ') << std::setw(2) <<  Board[i][j].GetHWordSize() << " ";
                     }
 
                     break;
@@ -335,11 +408,14 @@ void Crosswords::PrintBoard(PrintableBoardSymbols symbol)
                 case hWordLetterPos:
                     if (Board[i][j].GetSquareColor() == BLACK_SQUARE)
                     {
-                        std::cout <<  "-- ";
+                        buffer = "-- ";
                     }
                     else
                     {
-                        std::cout << std::setfill(' ') << std::setw(2) << Board[i][j].GetHWordLetterPos() << " ";
+                        buffer = std::to_string(Board[i][j].GetHWordLetterPos());
+                        buffer.insert(buffer.begin(), 2 - buffer.length(), ' ');
+                        buffer.append(" "); 
+                        //std::cout << std::setfill(' ') << std::setw(2) << Board[i][j].GetHWordLetterPos() << " ";
                     }
 
                     break;
@@ -348,29 +424,36 @@ void Crosswords::PrintBoard(PrintableBoardSymbols symbol)
                     
                     if (Board[i][j].GetSquareColor() == BLACK_SQUARE)
                     {
-                        std::cout <<  "-- ";
+                        buffer = "-- ";
                     }
                     else
                     {
-                        std::cout << std::setfill(' ') << std::setw(2) << Board[i][j].GetVWordId() << " ";
+                        buffer = std::to_string(Board[i][j].GetVWordId());
+                        buffer.insert(buffer.begin(), 2 - buffer.length(), ' ');
+                        buffer.append(" "); 
+                        //td::cout << std::setfill(' ') << std::setw(2) << Board[i][j].GetVWordId() << " ";
                     }
                     
                     break;
 
                 case vWordStart:
                     
-                    std::cout << Board[i][j].IsVWordStart() << " ";
+                    buffer = std::to_string(Board[i][j].IsVWordStart());
+                    buffer.append(" ");
                     break;
 
                 case vWordFixed:
 
                     if (Board[i][j].GetSquareColor() == BLACK_SQUARE)
                     {
-                        std::cout <<  "-- ";
+                        buffer = "-- ";
                     }
                     else
                     {
-                        std::cout << std::setfill(' ') << std::setw(2) << Board[i][j].IsVWordFixed() << " ";
+                        buffer = std::to_string(Board[i][j].IsVWordFixed());
+                        buffer.insert(buffer.begin(), 2 - buffer.length(), ' ');
+                        buffer.append(" "); 
+                       // std::cout << std::setfill(' ') << std::setw(2) << Board[i][j].IsVWordFixed() << " ";
                     }
 
                     break;
@@ -379,11 +462,14 @@ void Crosswords::PrintBoard(PrintableBoardSymbols symbol)
 
                     if (Board[i][j].GetSquareColor() == BLACK_SQUARE)
                     {
-                        std::cout <<  "-- ";
+                        buffer = "-- ";
                     }
                     else
                     {
-                        std::cout << std::setfill(' ') << std::setw(2) << Board[i][j].GetVWordSize() << " ";
+                        buffer = std::to_string(Board[i][j].GetVWordSize());
+                        buffer.insert(buffer.begin(), 2 - buffer.length(), ' ');
+                        buffer.append(" "); 
+                        //std::cout << std::setfill(' ') << std::setw(2) << Board[i][j].GetVWordSize() << " ";
                     }
 
                     break;
@@ -392,11 +478,14 @@ void Crosswords::PrintBoard(PrintableBoardSymbols symbol)
 
                     if (Board[i][j].GetSquareColor() == BLACK_SQUARE)
                     {
-                        std::cout <<  "-- ";
+                        buffer = "-- ";
                     }
                     else
                     {
-                        std::cout << std::setfill(' ') << std::setw(2) << Board[i][j].GetVWordLetterPos() << " ";
+                        buffer = std::to_string(Board[i][j].GetVWordLetterPos());
+                        buffer.insert(buffer.begin(), 2 - buffer.length(), ' ');
+                        buffer.append(" ");
+                       // std::cout << std::setfill(' ') << std::setw(2) << Board[i][j].GetVWordLetterPos() << " ";
                     }
 
                     break;
@@ -407,10 +496,15 @@ void Crosswords::PrintBoard(PrintableBoardSymbols symbol)
                     break;
             }
 
+            Log(buffer);
+            std::cout << buffer;
+
             
         }
+        Log("\n");
         std::cout << std::endl;
     }
+    Log("-------------------\n");
     std::cout << "-------------------\n";
     
     return;

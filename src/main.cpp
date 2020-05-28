@@ -11,6 +11,7 @@
 #include "InputCheck.hpp"
 #include "Crosswords.hpp"
 #include "Solver.hpp"
+#include "Logger.hpp"
 
 int main(int argc, char *argv[])
 {
@@ -78,20 +79,25 @@ int main(int argc, char *argv[])
     
     if(status == STATUS_OK)
     {
+        StartLog();
+        Log("Creating table.\n");
+
         std::unique_ptr<Crosswords> myCrosswordsBoard(new Crosswords(cfgFile, argv[1]));
         
-        //myCrosswordsBoard->PrintBoard(colors);
+        myCrosswordsBoard->PrintBoard(colors);
         myCrosswordsBoard->PrintBoard(letters);
-        //myCrosswordsBoard->PrintBoard(hWordIds);
-        //myCrosswordsBoard->PrintBoard(hWordStart);
-        //myCrosswordsBoard->PrintBoard(hWordFixed);
-        //myCrosswordsBoard->PrintBoard(hWordSize);
-        //myCrosswordsBoard->PrintBoard(hWordLetterPos);
-        //myCrosswordsBoard->PrintBoard(vWordIds);
-        //myCrosswordsBoard->PrintBoard(vWordStart);
-        //myCrosswordsBoard->PrintBoard(vWordIds);
-        //myCrosswordsBoard->PrintBoard(vWordSize);
-        //myCrosswordsBoard->PrintBoard(vWordLetterPos);
+        myCrosswordsBoard->PrintBoard(hWordIds);
+        myCrosswordsBoard->PrintBoard(hWordStart);
+        myCrosswordsBoard->PrintBoard(hWordFixed);
+        myCrosswordsBoard->PrintBoard(hWordSize);
+        myCrosswordsBoard->PrintBoard(hWordLetterPos);
+        myCrosswordsBoard->PrintBoard(vWordIds);
+        myCrosswordsBoard->PrintBoard(vWordStart);
+        myCrosswordsBoard->PrintBoard(vWordIds);
+        myCrosswordsBoard->PrintBoard(vWordSize);
+        myCrosswordsBoard->PrintBoard(vWordLetterPos);
+
+        
 
         std::unique_ptr<Solver> theSolution(new Solver(wordsFile, *myCrosswordsBoard));
 

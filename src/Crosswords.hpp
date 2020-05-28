@@ -45,7 +45,7 @@ class Crosswords
     public:
 
         int numHWords;
-        int numVHords;
+        int numVWords;
  
         Crosswords(FILE * cfgFile, std::string name);
 

@@ -2,7 +2,7 @@
 #include "Square.hpp"
 
 /*  
-    Square default constructor
+*   Class Square default constructor
 */
 Square::Square()
 {
@@ -20,6 +20,11 @@ Square::Square()
     vWordLetterPos = 0;
 }
 
+/*
+* Get the color of the square.
+* Possible values: WHITE_SQUARE, BLACK SQUARE
+* @return: 
+*/
 short Square::GetSquareColor()
 {
     return color;

@@ -10,6 +10,7 @@ set(Headers
     ../src/Crosswords.hpp
     ../src/Square.hpp
     ../src/Solver.hpp
+    ../src/Logger.hpp
 )       
 
 # Define macro "Sources" to reference all .cpp files 
@@ -18,6 +19,7 @@ set(Sources
     ../src/Crosswords.cpp
     ../src/Square.cpp
     ../src/Solver.cpp
+    ../src/Logger.cpp
 )
 
 # Include the CMakeLists from GoogleTest
