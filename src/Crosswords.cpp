@@ -1,13 +1,13 @@
 
 #include "Crosswords.hpp"
-#include "Logger.hpp"
 #include <iostream>
 #include <cstring>
 #include <iomanip>
 #include <algorithm>
 
-Crosswords::Crosswords(FILE * cfgFile, std::string name)
+Crosswords::Crosswords(FILE * cfgFile, std::string name, Logger inputLog)
 {
+    Log = inputLog;
     crosswordsName = name.substr(0, name.length()-4);
     SetBoardDimensions(cfgFile);
     Board = CreateBoard();
@@ -17,7 +17,6 @@ Crosswords::Crosswords(FILE * cfgFile, std::string name)
 
     return;
 }
-
 
 void Crosswords::SetBoardDimensions(FILE * cfgFile)
 {
@@ -30,6 +29,7 @@ std::string Crosswords::GetName()
 {
     return crosswordsName;
 }
+
 
 int Crosswords::GetNumberOfLines()
 {
@@ -64,7 +64,7 @@ std::vector<std::vector<Square>> Crosswords::CreateBoard()
     return newBoard;  
 }
 
-
+// Private function
 void Crosswords::PreFillBoard(FILE * cfgFile)
 {
     char buffer[64];
@@ -113,7 +113,7 @@ void Crosswords::PreFillBoard(FILE * cfgFile)
     return;
 }
 
-
+// Private function
 void Crosswords::IdentifyHorizontalWords()
 {
     int wordId = 1;
@@ -184,11 +184,12 @@ void Crosswords::IdentifyHorizontalWords()
     
     numHWords = wordId-1;
     
-    Log("We have " + std::to_string(numHWords) + " horizontal words.\n");
+    Log.WriteToLog("We have " + std::to_string(numHWords) + " horizontal words.\n");
     
     return;
 }
 
+// Private function
 void Crosswords::IdentifyVerticalWords()
 {
     int wordId = 1;
@@ -260,7 +261,7 @@ void Crosswords::IdentifyVerticalWords()
 
     numVWords = wordId-1;
 
-    Log("We have " + std::to_string(numVWords) + " vertical words.\n");
+    Log.WriteToLog("We have " + std::to_string(numVWords) + " vertical words.\n");
 
     return;
 }
@@ -278,62 +279,66 @@ void Crosswords::PrintBoard(PrintableBoardSymbols symbol)
     switch(symbol)
     {
         case colors:
-            buffer = "TABLE: SQUARE COLORS\n";                 
+            buffer = "\nTABLE: SQUARE COLORS\n";                 
             break;
 
         case letters:
-            buffer = "TABLE: LETTERS\n";  
+            buffer = "\nTABLE: LETTERS\n";  
             break;
         
         case hWordIds:
-            buffer = "TABLE: HORIZONTAL WORD ID\n";
+            buffer = "\nTABLE: HORIZONTAL WORD ID\n";
             break;
         
         case hWordStart:
-            buffer = "TABLE: HORIZONTAL WORD START SQUARES\n";
+            buffer = "\nTABLE: HORIZONTAL WORD START SQUARES\n";
             break;
 
         case hWordFixed:
-            buffer = "TABLE: IS HORIZONTAL WORD FIXED?\n";
+            buffer = "\nTABLE: IS HORIZONTAL WORD FIXED?\n";
             break;
 
         case hWordSize:
-            buffer = "TABLE: HORIZONTAL WORD SIZE\n";
+            buffer = "\nTABLE: HORIZONTAL WORD SIZE\n";
             break;
 
         case hWordLetterPos:
-            buffer = "TABLE: HORIZONTAL WORD LETTER POSITIONS\n";
+            buffer = "\nTABLE: HORIZONTAL WORD LETTER POSITIONS\n";
             break;
 
         case vWordIds:
-            buffer = "TABLE: VERTICAL WORD ID\n";
+            buffer = "\nTABLE: VERTICAL WORD ID\n";
             break;
 
         case vWordStart:
-            buffer = "TABLE: VERTICAL WORD START SQUARES\n";
+            buffer = "\nTABLE: VERTICAL WORD START SQUARES\n";
             break;
 
         case vWordFixed:
-            buffer = "TABLE: IS VERTICAL WORD FIXED?\n";
+            buffer = "\nTABLE: IS VERTICAL WORD FIXED?\n";
             break;
 
         case vWordSize:
-            buffer = "TABLE: VERTICAL WORD SIZE\n";
+            buffer = "\nTABLE: VERTICAL WORD SIZE\n";
             break;
 
         case vWordLetterPos:
-            buffer = "TABLE: VERTICAL WORD LETTER POSITIONS\n";
+            buffer = "\nTABLE: VERTICAL WORD LETTER POSITIONS\n";
             break;
 
         default:
             break;
     }
 
-    Log(buffer);
-    std::cout << buffer;
-    Log("-------------------\n");
-    std::cout << "-------------------\n";
+    Log.WriteToLog(buffer);
+    Log.WriteToLog("-------------------\n");
 
+    if(symbol == letters)
+    {
+        std::cout << buffer;
+        std::cout << "-------------------\n";
+    }
+    
     for(int i=0; i<numLin; i++)
     {
         for(int j=0; j<numCol; j++)
@@ -350,6 +355,7 @@ void Crosswords::PrintBoard(PrintableBoardSymbols symbol)
                     
                     buffer = Board[i][j].GetLetter();
                     buffer.append(" ");
+                    std::cout << buffer;
                     break;
                 
                 case hWordIds:
@@ -361,10 +367,9 @@ void Crosswords::PrintBoard(PrintableBoardSymbols symbol)
                     else
                     {
                         buffer = std::to_string(Board[i][j].GetHWordId());
-                        buffer.insert(buffer.begin(), 2 - buffer.length(), '0');
+                        buffer.insert(buffer.begin(), 2 - buffer.length(), ' ');
                         buffer.append(" ");                        
                     }
-                    
                     break;
                 
                 case hWordStart:
@@ -384,9 +389,7 @@ void Crosswords::PrintBoard(PrintableBoardSymbols symbol)
                         buffer = std::to_string(Board[i][j].IsHWordFixed());
                         buffer.insert(buffer.begin(), 2 - buffer.length(), ' ');
                         buffer.append(" "); 
-                       // std::cout << std::setfill(' ') << std::setw(2) << Board[i][j].IsHWordFixed() << " ";
                     }
-
                     break;
 
                 case hWordSize:
@@ -400,9 +403,7 @@ void Crosswords::PrintBoard(PrintableBoardSymbols symbol)
                         buffer = std::to_string(Board[i][j].GetHWordSize());
                         buffer.insert(buffer.begin(), 2 - buffer.length(), ' ');
                         buffer.append(" "); 
-                        //std::cout << std::setfill(' ') << std::setw(2) <<  Board[i][j].GetHWordSize() << " ";
                     }
-
                     break;
 
                 case hWordLetterPos:
@@ -415,9 +416,7 @@ void Crosswords::PrintBoard(PrintableBoardSymbols symbol)
                         buffer = std::to_string(Board[i][j].GetHWordLetterPos());
                         buffer.insert(buffer.begin(), 2 - buffer.length(), ' ');
                         buffer.append(" "); 
-                        //std::cout << std::setfill(' ') << std::setw(2) << Board[i][j].GetHWordLetterPos() << " ";
                     }
-
                     break;
 
                 case vWordIds:
@@ -431,9 +430,7 @@ void Crosswords::PrintBoard(PrintableBoardSymbols symbol)
                         buffer = std::to_string(Board[i][j].GetVWordId());
                         buffer.insert(buffer.begin(), 2 - buffer.length(), ' ');
                         buffer.append(" "); 
-                        //td::cout << std::setfill(' ') << std::setw(2) << Board[i][j].GetVWordId() << " ";
                     }
-                    
                     break;
 
                 case vWordStart:
@@ -453,9 +450,7 @@ void Crosswords::PrintBoard(PrintableBoardSymbols symbol)
                         buffer = std::to_string(Board[i][j].IsVWordFixed());
                         buffer.insert(buffer.begin(), 2 - buffer.length(), ' ');
                         buffer.append(" "); 
-                       // std::cout << std::setfill(' ') << std::setw(2) << Board[i][j].IsVWordFixed() << " ";
                     }
-
                     break;
 
                 case vWordSize:
@@ -469,9 +464,7 @@ void Crosswords::PrintBoard(PrintableBoardSymbols symbol)
                         buffer = std::to_string(Board[i][j].GetVWordSize());
                         buffer.insert(buffer.begin(), 2 - buffer.length(), ' ');
                         buffer.append(" "); 
-                        //std::cout << std::setfill(' ') << std::setw(2) << Board[i][j].GetVWordSize() << " ";
                     }
-
                     break;
 
                 case vWordLetterPos:
@@ -485,9 +478,7 @@ void Crosswords::PrintBoard(PrintableBoardSymbols symbol)
                         buffer = std::to_string(Board[i][j].GetVWordLetterPos());
                         buffer.insert(buffer.begin(), 2 - buffer.length(), ' ');
                         buffer.append(" ");
-                       // std::cout << std::setfill(' ') << std::setw(2) << Board[i][j].GetVWordLetterPos() << " ";
                     }
-
                     break;
 
                 default:
@@ -496,16 +487,23 @@ void Crosswords::PrintBoard(PrintableBoardSymbols symbol)
                     break;
             }
 
-            Log(buffer);
-            std::cout << buffer;
-
+            Log.WriteToLog(buffer);
             
         }
-        Log("\n");
-        std::cout << std::endl;
+        Log.WriteToLog("\n");
+
+        if(symbol == letters)
+        {
+            std::cout << std::endl;
+        }
+        
     }
-    Log("-------------------\n");
-    std::cout << "-------------------\n";
+    Log.WriteToLog("-------------------\n");
+
+    if(symbol == letters)
+    {
+        std::cout << "-------------------\n";
+    }
     
     return;
 }

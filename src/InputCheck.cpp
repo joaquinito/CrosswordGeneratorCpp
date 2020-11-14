@@ -63,7 +63,7 @@ uint8_t IsWordsFileValid(char* input)
 }
 
 /*
-Check if repetation flag argument has a valid syntax ( "-r<x>", where <x> is a positive integer).
+Check if repetition flag argument has a valid syntax ( "-r<x>", where <x> is a positive integer).
 */
 uint8_t IsFlagR(char* input)
 {

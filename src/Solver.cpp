@@ -6,10 +6,10 @@
 
 /*
 *   Default constuctor.
-*   Input: wordsFile
 */
-Solver::Solver(FILE * wordsFile)
+Solver::Solver(FILE * wordsFile, Logger inputLog)
 {
+    Log = inputLog;
     CreateWordBank(wordsFile, MAX_LENGTH_OF_WORD);
 }
 
@@ -18,15 +18,13 @@ Solver::Solver(FILE * wordsFile)
 *   Will create a word bank with words smaller or equal to the max
 *   dimension of the crosswords board. 
 */
-Solver::Solver(FILE * wordsFile, Crosswords &inputCrosswords)
+Solver::Solver(FILE * wordsFile, Crosswords &inputCrosswords, Logger inputLog)
 {
+    Log = inputLog;
     CreateWordBank(wordsFile, inputCrosswords.GetMaxDimension());
 }
 
-/*
 
-
-*/
 uint8_t Solver::CreateWordBank(FILE * wordsFile, int maxLength)
 {
     char buffer[maxLength+1];
@@ -77,6 +75,9 @@ uint8_t Solver::FindSolution(Crosswords &inputCrosswords)
     FILE * outputFile;
     std::string buffer;
     
+    Log.WriteToLog("> Solver algorithm started.\n");
+    Log.WriteToLog("> Creating list of horizontal words, list of vertical words, and list of squares that are shared by an horizontal and a vertical word.\n");
+
     // Create list of horizontal words, list of vertical words, and list of squares that are shared by an horizontal 
     // and a vertical word.
     for(int i = 0; i < inputCrosswords.GetNumberOfLines(); i++)
@@ -139,10 +140,11 @@ uint8_t Solver::FindSolution(Crosswords &inputCrosswords)
     sort(BoardVerticalWords.begin(), BoardVerticalWords.end(), 
         [](const BoardWordInfo &left, const BoardWordInfo &right) { return left.id < right.id; });
     
-    //PrintBoardHorizontalWords();
-    //PrintBoardVerticalWords();  
-    
-    // Fill candidate list for each horizontal word with the words from the WordBank with the corresponding length 
+    PrintBoardHorizontalWords();
+    PrintBoardVerticalWords();  
+    PrintBoardSharedSquares();
+
+    Log.WriteToLog("> Filling candidate list for each horizontal word with the words from the WordBank with the corresponding length\n");
     for(int i = 0; i < BoardHorizontalWords.size(); i++)
     {
         Candidate newCandidate;
@@ -157,7 +159,7 @@ uint8_t Solver::FindSolution(Crosswords &inputCrosswords)
         }
     }
 
-    // Fill candidate list for each vertical word with the words from the WordBank with the corresponding length
+    Log.WriteToLog("> Filling candidate list for each vertical word with the words from the WordBank with the corresponding length\n");
     for(int i = 0; i < BoardVerticalWords.size(); i++)
     {
         Candidate newCandidate;
@@ -174,11 +176,12 @@ uint8_t Solver::FindSolution(Crosswords &inputCrosswords)
        // BoardVerticalWords[i].candidates = WordBank[BoardVerticalWords[i].size];
     }
 
-    //std::cout << "Candidate list before algorithm:" << std::endl;
-    //PrintCandidateLists();
+    Log.WriteToLog("\nINITIAL CANDIDATE LIST:\n");
+    PrintCandidateLists();
 
-    // Iterate two times
-    for(int c = 0; c < 2; c++)
+
+    Log.WriteToLog("\n> Algorithm Part 1: Checking the matching horizontal and vertical candidates in the shared squares\n");
+    for(int c = 0; c < 2; c++) // Iterate two times
     {
         SharedSquaresCheck(inputCrosswords, ALGORITHM_FIRST_STAGE);
 
@@ -225,13 +228,13 @@ uint8_t Solver::FindSolution(Crosswords &inputCrosswords)
         }
     }
 
-    std::cout << "Candidate list after first part of the algorithm:" << std::endl;
+    Log.WriteToLog("\nCANDIDATE LIST AFTER FIRST PART OF ALGORITHM:\n");
     PrintCandidateLists();
 
     if(noSolution == false)
     {
         
-        printf("\nAlgorithm Second Stage\n\n");
+        Log.WriteToLog("> Algorithm Part 2\n");
 
         // For each horizontal word to be filled in the board
         for(int i = 0; i < BoardHorizontalWords.size(); i++)
@@ -239,30 +242,32 @@ uint8_t Solver::FindSolution(Crosswords &inputCrosswords)
             int aux = 0; // SOMETHING VERY WRONG WITH THIS VARIABLE
             int escape = 0;
 
-            std::cout << "Hor number " << i << std::endl;
+            Log.WriteToLog("> Horizontal number " + std::to_string(i) + " \n");
 
             // If the word is not pre-filled and has more than one candidate
             if((BoardHorizontalWords[i].state != FIXED) && (BoardHorizontalWords[i].state != CHOSEN))
             {
                 while(escape != 1)
                 {
-                   // printf("aux = %d\n", aux);
                     while(BoardHorizontalWords[i].candidates[aux].isNominated != true)
                     {
                         aux++; 
-                    //    printf("aux = %d\n", aux);
                     }
+                    
+                    
                     if(aux > BoardHorizontalWords[i].candidates.size())
                     {
                         return 1;
                     }
                    
-                    printf("aux = %d\n", aux);
+                    printf("Candidate nr. %d\n", aux);
+                    printf("Candidate nominated: %s\n", BoardHorizontalWords[i].candidates[aux].candidateWord.c_str());
 
                     BoardHorizontalWords[i].state = SELECTED;
                     BoardHorizontalWords[i].chosenWord = BoardHorizontalWords[i].candidates[aux].candidateWord; // <- PROBLEM HERE!!!
                    
-                   // std::cout << "Trying " << BoardHorizontalWords[i].chosenWord << " for HWord " << (int)BoardHorizontalWords[i].id << std::endl;
+                    Log.WriteToLog("Candidate nominated for H" + std::to_string(BoardHorizontalWords[i].id) + 
+                                    ": " + BoardHorizontalWords[i].chosenWord);
       
                     // If checking of shared squares in unsucessful, reset the nominations and try another word
                     if(SharedSquaresCheck(inputCrosswords, ALGORITHM_SECOND_STAGE) == FAILURE)
@@ -401,6 +406,7 @@ uint8_t Solver::SharedSquaresCheck(Crosswords &inputCrosswords, uint8_t algorith
     int n;
     uint8_t returnStatus;
 
+
     // Go through each shared square
     for(int i = 0; i < SharedSquares.size(); i++)
     {
@@ -414,6 +420,8 @@ uint8_t Solver::SharedSquaresCheck(Crosswords &inputCrosswords, uint8_t algorith
 
         m = 0;
         n = 0;
+
+        Log.WriteToLog("\n>> Analysing square (" + std::to_string(sharedSquareLin) + "." + std::to_string(sharedSquareCol) + ")\n");
 
         // Go to word in BoardHorizontalWords list with the horizontal ID of the shared square 
         while(BoardHorizontalWords[m].id != horId)
@@ -434,8 +442,6 @@ uint8_t Solver::SharedSquaresCheck(Crosswords &inputCrosswords, uint8_t algorith
         }
         else if(algorithmStage == ALGORITHM_SECOND_STAGE)
         {
-          //  std::cout << "Testing square [" << (int)SharedSquares[i].lin << "][" << (int)SharedSquares[i].col << "]\n" << std::endl;
-
             returnStatus = ValidateHorizontalCandidates_SecondStage(boardSquare, BoardHorizontalWords, BoardVerticalWords, m, n);
 
             if(returnStatus == SUCCESS)
@@ -474,6 +480,8 @@ void Solver::ValidateHorizontalCandidates(Square &boardSquare,
     std::vector<Candidate>::iterator itr;
     bool match;
 
+    Log.WriteToLog("   ----- HORIZONTAL CANDIDATE CHECK ----- \n");
+
     itr = BoardHorizontalWords[m].candidates.end();
 
     for(int j = BoardHorizontalWords[m].candidates.size()-1; j >= 0; j--)
@@ -484,6 +492,8 @@ void Solver::ValidateHorizontalCandidates(Square &boardSquare,
         {
             if(BoardHorizontalWords[m].candidates[j].candidateWord[horWordPos] == boardSquare.GetLetter())
             {
+                Log.WriteToLog("  " + BoardHorizontalWords[m].candidates[j].candidateWord + " matched with the fixed vertical word (letter " +
+                               BoardHorizontalWords[m].candidates[j].candidateWord[horWordPos] + ")\n");
                 match = true;
             }
         }
@@ -491,13 +501,12 @@ void Solver::ValidateHorizontalCandidates(Square &boardSquare,
         {
             for(int k = 0; k < BoardVerticalWords[n].candidates.size(); k++)
             {
-                /*      std::cout << BoardHorizontalWords[m].candidates[j] << "  " << BoardVerticalWords[n].candidates[k] << std::endl;
-                        std::cout << "hor Letter: " << BoardHorizontalWords[m].candidates[j][horWordPos] << 
-                        " ver Letter: " << BoardVerticalWords[n].candidates[k][verWordPos] << std::endl;
-                */
                 if(BoardHorizontalWords[m].candidates[j].candidateWord[horWordPos] == 
                     BoardVerticalWords[n].candidates[k].candidateWord[verWordPos])
                 {
+                    Log.WriteToLog("   " + BoardHorizontalWords[m].candidates[j].candidateWord + " matched with the vertical candidate " +
+                                    BoardVerticalWords[n].candidates[k].candidateWord + " (letter " +
+                                    BoardHorizontalWords[m].candidates[j].candidateWord[horWordPos] + ")\n");
                     match = true;
                 }
             }
@@ -506,6 +515,7 @@ void Solver::ValidateHorizontalCandidates(Square &boardSquare,
         itr--;
         if(match != true)
         {
+            Log.WriteToLog("   No match found for " + BoardHorizontalWords[m].candidates[j].candidateWord + ". Candidate discard.\n");
             BoardHorizontalWords[m].candidates.erase(itr);
         }
     }
@@ -524,6 +534,8 @@ void Solver::ValidateVerticalCandidates(Square &boardSquare,
     std::vector<Candidate>::iterator itr;
     bool match;
 
+    Log.WriteToLog("   ----- VERTICAL CANDIDATE CHECK ----- \n");
+
     itr = BoardVerticalWords[n].candidates.end();
 
     for(int j = BoardVerticalWords[n].candidates.size()-1; j >= 0; j--)
@@ -534,6 +546,8 @@ void Solver::ValidateVerticalCandidates(Square &boardSquare,
         {
             if(BoardVerticalWords[n].candidates[j].candidateWord[verWordPos] == boardSquare.GetLetter())
             {
+                Log.WriteToLog("  " + BoardVerticalWords[n].candidates[j].candidateWord + " matched with the fixed horizontal word (letter " +
+                               BoardVerticalWords[n].candidates[j].candidateWord[verWordPos] + ")\n");
                 match = true;
             }
         }
@@ -541,15 +555,12 @@ void Solver::ValidateVerticalCandidates(Square &boardSquare,
         {
             for(int k = 0; k < BoardHorizontalWords[m].candidates.size(); k++)
             {
-
-                /*     std::cout << BoardVerticalWords[n].candidates[j] << "  " << BoardHorizontalWords[m].candidates[k] << std::endl;
-                            std::cout << "hor Letter: " << BoardHorizontalWords[m].candidates[k][horWordPos] << 
-                            " ver Letter: " << BoardVerticalWords[n].candidates[j][verWordPos] << std::endl;
-                */
-
                 if(BoardVerticalWords[n].candidates[j].candidateWord[verWordPos] == 
                     BoardHorizontalWords[m].candidates[k].candidateWord[horWordPos])
                 {
+                    Log.WriteToLog("   " + BoardVerticalWords[n].candidates[j].candidateWord + " matched with the horizontal candidate " +
+                                    BoardHorizontalWords[m].candidates[k].candidateWord + " (letter " +
+                                    BoardVerticalWords[n].candidates[j].candidateWord[verWordPos] + ")\n");
                     match = true;
                 }
             }
@@ -559,6 +570,7 @@ void Solver::ValidateVerticalCandidates(Square &boardSquare,
 
         if(match != true)
         {
+            Log.WriteToLog("   No match found for " + BoardVerticalWords[n].candidates[j].candidateWord + ". Candidate discard.\n");
             BoardVerticalWords[n].candidates.erase(itr);
         }
     }
@@ -779,35 +791,40 @@ uint8_t Solver::ValidateVerticalCandidates_SecondStage(
 
 void Solver::PrintBoardHorizontalWords()
 {
+    Log.WriteToLog("HORIZONTAL BOARD WORDS:\n");
     for(int i = 0; i < BoardHorizontalWords.size(); i++)
     {
-        std::cout << "H" << (int)BoardHorizontalWords[i].id << "(" << (int)BoardHorizontalWords[i].wordStartLin
-                << "." << (int)BoardHorizontalWords[i].wordStartCol << ") Size: " 
-                << (int)BoardHorizontalWords[i].size << std::endl;
+        Log.WriteToLog("H" + std::to_string(BoardHorizontalWords[i].id) + "(" +
+                       std::to_string(BoardHorizontalWords[i].wordStartLin) + "." +
+                       std::to_string(BoardHorizontalWords[i].wordStartCol) + ") Size: " +
+                       std::to_string(BoardHorizontalWords[i].size) + "\n");
     }
-
+    Log.WriteToLog("\n");
     return;
 }
 
 void Solver::PrintBoardVerticalWords()
 {
+    Log.WriteToLog("VERTICAL BOARD WORDS:\n");
     for(int i = 0; i < BoardVerticalWords.size(); i++)
     {
-        std::cout << "V" << (int)BoardVerticalWords[i].id << "(" << (int)BoardVerticalWords[i].wordStartLin
-                << "." << (int)BoardVerticalWords[i].wordStartCol << ") Size: " 
-                << (int)BoardVerticalWords[i].size << std::endl;
+        Log.WriteToLog("H" + std::to_string(BoardVerticalWords[i].id) + "(" +
+                       std::to_string(BoardVerticalWords[i].wordStartLin) + "." +
+                       std::to_string(BoardVerticalWords[i].wordStartCol) + ") Size: " +
+                       std::to_string(BoardVerticalWords[i].size) + "\n");
     }
-
+    Log.WriteToLog("\n");
     return;
 }
 
 void Solver::PrintBoardSharedSquares()
 {
-    std::cout << "\nShared Squares:\n";
+    Log.WriteToLog("SHARED SQUARES:\n");
     for(int i = 0; i < SharedSquares.size(); i++)
     {
-        std::cout << "(" << (int)SharedSquares[i].lin << "." << (int)SharedSquares[i].col << ")" << std::endl;
+        Log.WriteToLog("(" + std::to_string(SharedSquares[i].lin) + "." + std::to_string(SharedSquares[i].col) + ")\n");
     }
+    Log.WriteToLog("\n");
 
     return;
 }
@@ -816,26 +833,26 @@ void Solver::PrintCandidateLists()
 {
     for(int x = 0; x < BoardHorizontalWords.size(); x++)
         {
-            std::cout << "Candidates for H" << (int)BoardHorizontalWords[x].id << ": ";
+            Log.WriteToLog("Candidates for H" + std::to_string(BoardHorizontalWords[x].id) + ": ");
 
             for(int y = 0; y < BoardHorizontalWords[x].candidates.size(); y++)
             {
-                std::cout << BoardHorizontalWords[x].candidates[y].candidateWord << " ";
+                Log.WriteToLog(BoardHorizontalWords[x].candidates[y].candidateWord + " ");
             }
-
-            std::cout << std::endl;
+            Log.WriteToLog("\n");
         }
 
         for(int x = 0; x < BoardVerticalWords.size(); x++)
         {
-            std::cout << "Candidates for V" << (int)BoardVerticalWords[x].id << ": ";
+            Log.WriteToLog("Candidates for V" + std::to_string(BoardVerticalWords[x].id) + ": ");
+
+            //std::cout << "Candidates for V" << (int)BoardVerticalWords[x].id << ": ";
 
             for(int y = 0; y < BoardVerticalWords[x].candidates.size(); y++)
             {
-                std::cout << BoardVerticalWords[x].candidates[y].candidateWord << " ";
+                Log.WriteToLog(BoardVerticalWords[x].candidates[y].candidateWord + " ");
             }
-
-            std::cout << std::endl;
+            Log.WriteToLog("\n");
         }
 
     return;

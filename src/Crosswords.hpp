@@ -4,6 +4,7 @@
 #include <iostream>
 #include <vector>
 #include "Square.hpp"
+#include "Logger.hpp"
 
 enum PrintableBoardSymbols
 {
@@ -34,6 +35,8 @@ class Crosswords
 
         std::vector<int> wordSizes;
 
+        Logger Log;
+
         std::vector<std::vector<Square>> CreateBoard();
 
         void PreFillBoard(FILE * cfgFile);
@@ -47,7 +50,7 @@ class Crosswords
         int numHWords;
         int numVWords;
  
-        Crosswords(FILE * cfgFile, std::string name);
+        Crosswords(FILE * cfgFile, std::string name, Logger inputLog);
 
         void SetBoardDimensions(FILE * cfgFile);
 

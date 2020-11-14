@@ -4,6 +4,7 @@
 #include <iostream>
 #include <vector>
 #include "Crosswords.hpp"
+#include "Logger.hpp"
 
 #define ALGORITHM_FIRST_STAGE   1
 #define ALGORITHM_SECOND_STAGE  2
@@ -61,6 +62,8 @@ class Solver
 {
     private:
 
+        Logger Log;
+
         std::vector<std::string> WordBank[MAX_LENGTH_OF_WORD+1];
 
         std::vector<Coordinates> SharedSquares;
@@ -91,9 +94,9 @@ class Solver
 
     public:
         
-        Solver(FILE *wordsFile);
+        Solver(FILE *wordsFile, Logger inputLog);
 
-        Solver(FILE *wordsFile, Crosswords &inputCrosswords);
+        Solver(FILE *wordsFile, Crosswords &inputCrosswords, Logger inputLog);
 
         uint8_t CreateWordBank(FILE * wordsFile, int maxLength);
 
@@ -106,7 +109,6 @@ class Solver
         void PrintBoardSharedSquares();
 
         void PrintCandidateLists();
-
 };
 
 #endif

@@ -8,11 +8,14 @@
 #include <cstdint>
 #include <cstring>
 #include <memory>
+#include "Logger.hpp"
 #include "InputCheck.hpp"
 #include "Crosswords.hpp"
 #include "Solver.hpp"
-#include "Logger.hpp"
 
+
+// argv[1]: cfg file
+// argv[2]: words
 int main(int argc, char *argv[])
 {
     std::string cfgFileDir = "table_cfg/";
@@ -26,6 +29,8 @@ int main(int argc, char *argv[])
     
     uint8_t reps;
     uint8_t status;
+
+    Logger Log;
 
     status = IsNumOfArgsValid(argc);
 
@@ -79,10 +84,10 @@ int main(int argc, char *argv[])
     
     if(status == STATUS_OK)
     {
-        StartLog();
-        Log("Creating table.\n");
+        Log.StartLog(argv[1], argv[2]);
+        Log.WriteToLog("Creating table.\n");
 
-        std::unique_ptr<Crosswords> myCrosswordsBoard(new Crosswords(cfgFile, argv[1]));
+        std::unique_ptr<Crosswords> myCrosswordsBoard(new Crosswords(cfgFile, argv[1], Log));
         
         myCrosswordsBoard->PrintBoard(colors);
         myCrosswordsBoard->PrintBoard(letters);
@@ -98,15 +103,14 @@ int main(int argc, char *argv[])
         myCrosswordsBoard->PrintBoard(vWordLetterPos);
 
         
-
-        std::unique_ptr<Solver> theSolution(new Solver(wordsFile, *myCrosswordsBoard));
+        std::unique_ptr<Solver> theSolution(new Solver(wordsFile, *myCrosswordsBoard, Log));
 
         if(!theSolution->FindSolution(*myCrosswordsBoard))
         {
             std::cout << "No solution was found." << std::endl;
         };
         
-        myCrosswordsBoard->PrintBoard(letters);
+        //myCrosswordsBoard->PrintBoard(letters);
     }
 
     if(cfgFile != NULL)
