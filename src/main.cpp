@@ -87,30 +87,30 @@ int main(int argc, char *argv[])
         Log.StartLog(argv[1], argv[2]);
         Log.WriteToLog("Creating table.\n");
 
-        std::unique_ptr<Crosswords> myCrosswordsBoard(new Crosswords(cfgFile, argv[1], Log));
+        std::unique_ptr<Crosswords> crosswordBoard(new Crosswords(cfgFile, argv[1], Log));
         
-        myCrosswordsBoard->PrintBoard(colors);
-        myCrosswordsBoard->PrintBoard(letters);
-        myCrosswordsBoard->PrintBoard(hWordIds);
-        myCrosswordsBoard->PrintBoard(hWordStart);
-        myCrosswordsBoard->PrintBoard(hWordFixed);
-        myCrosswordsBoard->PrintBoard(hWordSize);
-        myCrosswordsBoard->PrintBoard(hWordLetterPos);
-        myCrosswordsBoard->PrintBoard(vWordIds);
-        myCrosswordsBoard->PrintBoard(vWordStart);
-        myCrosswordsBoard->PrintBoard(vWordIds);
-        myCrosswordsBoard->PrintBoard(vWordSize);
-        myCrosswordsBoard->PrintBoard(vWordLetterPos);
+        crosswordBoard->PrintBoard(colors);
+        crosswordBoard->PrintBoard(letters);
+        crosswordBoard->PrintBoard(hWordIds);
+        crosswordBoard->PrintBoard(hWordStart);
+        crosswordBoard->PrintBoard(hWordFixed);
+        crosswordBoard->PrintBoard(hWordSize);
+        crosswordBoard->PrintBoard(hWordLetterPos);
+        crosswordBoard->PrintBoard(vWordIds);
+        crosswordBoard->PrintBoard(vWordStart);
+        crosswordBoard->PrintBoard(vWordIds);
+        crosswordBoard->PrintBoard(vWordSize);
+        crosswordBoard->PrintBoard(vWordLetterPos);
 
         
-        std::unique_ptr<Solver> theSolution(new Solver(wordsFile, *myCrosswordsBoard, Log));
+        std::unique_ptr<Solver> theSolution(new Solver(wordsFile, *crosswordBoard, Log));
 
-        if(!theSolution->FindSolution(*myCrosswordsBoard))
+        if(!theSolution->FindSolution(*crosswordBoard))
         {
             std::cout << "No solution was found." << std::endl;
         };
         
-        //myCrosswordsBoard->PrintBoard(letters);
+        crosswordBoard->PrintBoard(letters);
     }
 
     if(cfgFile != NULL)

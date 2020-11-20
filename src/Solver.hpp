@@ -72,12 +72,16 @@ class Solver
 
         std::vector<BoardWordInfo> BoardVerticalWords;
 
+        void GetListsOfWordsAndSharedSquares(Crosswords &inputCrosswords);
+
+        void FillCandidateListsForTheWords();
+
         uint8_t SharedSquaresCheck(Crosswords &inputCrosswords, uint8_t algorithmStage);
 
-        void ValidateHorizontalCandidates(Square &boardSquare, std::vector<BoardWordInfo> &BoardHorizontalWords, 
+        uint8_t ValidateHorizontalCandidates(Square &boardSquare, std::vector<BoardWordInfo> &BoardHorizontalWords, 
                                           std::vector<BoardWordInfo> &BoardVerticalWords, int &m, int &n);
 
-        void ValidateVerticalCandidates(Square &boardSquare, std::vector<BoardWordInfo> &BoardHorizontalWords, 
+        uint8_t ValidateVerticalCandidates(Square &boardSquare, std::vector<BoardWordInfo> &BoardHorizontalWords, 
                                           std::vector<BoardWordInfo> &BoardVerticalWords, int &m, int &n);
 
         uint8_t ValidateHorizontalCandidates_SecondStage(Square &boardSquare, std::vector<BoardWordInfo> &BoardHorizontalWords, 
